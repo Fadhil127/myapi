@@ -1,1 +1,0 @@
-*MYREST API
