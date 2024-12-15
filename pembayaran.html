@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pembayaran</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .btn {
+            background-color: #0072ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .qris-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .qris-container img {
+            width: 250px;
+            height: 250px;
+            border: 2px solid #0072ff;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Konfirmasi Pembayaran</h2>
+
+        <!-- QRIS Image -->
+        <div class="qris-container">
+            <h3>Scan QRIS untuk Pembayaran</h3>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214223525432429810303UMI51440014ID.CO.QRIS.WWW0215ID20232603816450303UMI5204481253033605802ID5909QR NP19976009WAY KANAN61053476162070703A0163045B57&size=250x250" alt="QRIS">
+        </div>
+
+        <p>Masukkan URL gambar bukti pembayaran Anda:</p>
+        <input type="text" id="imageUrl" placeholder="Masukkan URL Gambar" style="width: 100%; padding: 10px; margin-bottom: 20px;">
+        
+        <button id="sendToWhatsApp" class="btn">Konfirmasi Pembayaran</button>
+        <div id="status" class="status"></div>
+        
+    </div>
+
+    <script>
+        // Fungsi untuk mengirimkan URL gambar ke WhatsApp
+        document.getElementById('sendToWhatsApp').addEventListener('click', function() {
+            const imageUrl = document.getElementById('imageUrl').value;
+            const phoneNumber = '6285860605722'; // Ganti dengan nomor WhatsApp tujuan
+
+            if (imageUrl) {
+                const message = `*Gambar* : ${imageUrl}`;
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=*📦Berikut Konfirmasi Pembayaran Saya*
+                ${encodeURIComponent(message)}`;
+
+                // Menampilkan status pengiriman
+                const statusDiv = document.getElementById('status');
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'status';
+                statusDiv.innerText = 'Link gambar berhasil dikirim ke WhatsApp!';
+
+                // Redirect ke WhatsApp
+                window.open(whatsappUrl, '_blank');
+            } else {
+                // Menampilkan error jika tidak ada URL yang dimasukkan
+                const statusDiv = document.getElementById('status');
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'status error';
+                statusDiv.innerText = 'Tolong masukkan URL gambar terlebih dahulu.';
+            }
+        });
+    </script>
+</body>
+</html>
