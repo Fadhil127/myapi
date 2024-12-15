@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran QRIS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Pembayaran QRIS</h2>
+        <p>Silakan scan QR di bawah ini untuk melanjutkan pembayaran:</p>
+        <div class="qr-code">
+            <img id="qrisImage" alt="QR Code" />
+        </div>
+        <button class="btn" id="checkPayment">Cek Status Pembayaran</button>
+        <div id="status" class="status"></div>
+    </div>
+    <script>
+        // Payload QRIS dari server atau API lo
+        const qrisPayload = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214244247663812840303UMI51440014ID.CO.QRIS.WWW0215ID20222128554330303UMI5204481453033605802ID5910HANZ STORE6006MALANG61056511162070703A0163041304";
+
+        // URL API QR Generator
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrisPayload)}&size=250x250`;
+
+        // Set QR Code di halaman
+        document.getElementById('qrisImage').src = qrApiUrl;
+
+        // Fitur status pembayaran
+        const statusDiv = document.getElementById('status');
+        const checkPaymentButton = document.getElementById('checkPayment');
+
+        // Data API cek status
+        const apiKey = "rafael";
+        const merchant = "OK433688";
+        const keyorkut = "25803241733322019433688OKCTF5CCB3CAA16D92630FB36CEE576460A8";
+
+        function updatePaymentStatus(status) {
+            statusDiv.style.display = 'block';
+            if (status === 'success') {
+                statusDiv.className = 'status success';
+                statusDiv.innerText = 'Pembayaran berhasil!';
+            } else if (status === 'pending') {
+                statusDiv.className = 'status pending';
+                statusDiv.innerText = 'Menunggu pembayaran...';
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.innerText = 'Pembayaran gagal. Silakan coba lagi.';
+            }
+        }
+
+        async function checkPaymentStatus() {
+            const apiUrl = `https://api.rafaelxputra.my.id/api/orkut/cekstatus?apikey=${apiKey}&merchant=${merchant}&keyorkut=${keyorkut}`;
+            try {
+                const response = await fetch(apiUrl);
+                const result = await response.json();
+
+                // Handle response
+                if (result.status === "success") {
+                    updatePaymentStatus('success');
+                } else if (result.status === "pending") {
+                    updatePaymentStatus('pending');
+                } else {
+                    updatePaymentStatus('error');
+                }
+            } catch (error) {
+                console.error("Error checking payment status:", error);
+                updatePaymentStatus('error');
+            }
+        }
+
+        // Event handler cek status pembayaran
+        checkPaymentButton.addEventListener('click', checkPaymentStatus);
+
+        // Opsi otomatis cek status setelah 5 detik
+        setTimeout(checkPaymentStatus, 5000);
+    </script>
+</body>
+</html>
